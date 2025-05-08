@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Perguntas</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+</head>
+<body>
+    <!-- <img src="/img/doro.webp"> -->
+    <h1>Guia perguntas!</h1>
+    <h3>Lista de perguntas</h3>
+
+    <%= nome %>
+    <%= lang %>
+    <%= empresa %>
+    <%= ano %>
+
+    <% if(msg == true){ %>
+        <h3>Teste True</h3>
+    <% } else { %>
+        <h3>Teste False</h3>
+    <% } %>
+
+    <% produtos.forEach(function(produto){ %>
+        <hr>
+        <h5><%= produto.nome %></h5>
+        <h5><%= produto.preco %></h5>
+    <% }) %>
+</body>
+<script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+</html>
