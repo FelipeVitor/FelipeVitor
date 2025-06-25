@@ -2,6 +2,8 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const app = express();
 const connection = require("./database/database");
+const Pergunta = require("./database/Pergunta");
+require('./database/Pergunta');
 
 connection
     .authenticate()
@@ -42,6 +44,14 @@ app.get("/index",(req,res) => {
     });
 });
 
+app.get("/", (req, res) => {
+    Pergunta.findAll({ raw: true, order:[['id','DESC']] }).then(perguntas => {
+        res.render("index", {
+            perguntas: perguntas
+        });
+    });
+});
+
 app.get("/perguntar",(req,res) => {
 
     res.render("perguntar",{
@@ -49,12 +59,42 @@ app.get("/perguntar",(req,res) => {
     });
 });
 
+app.post("/salvarpergunta",(req,res) => {
+    var titulo = req.body.titulo;
+    var descricao = req.body.descricao;
+    Pergunta.create({
+        titulo: titulo,
+        descricao: descricao
+    }).then(() => {
+        res.redirect("/");
+    }).catch((erro) => {
+        res.send("Houve um erro: " + erro);
+    });
+});
+
+app.get("/pergunta/:id", async (req, res) => {
+    const { id } = req.params;
+
+    if (isNaN(id)) {
+        return res.redirect("/");
+    }
+
+    try {
+        const pergunta = await Pergunta.findOne({ where: { id } });
+
+        if (pergunta) {
+            res.render("pergunta", { pergunta: pergunta.toJSON() }); 
+        } else {
+            res.redirect("/");
+        }
+    } catch (error) {
+        console.error("Erro ao buscar pergunta:", error);
+        res.status(500).send("Erro interno do servidor");
+    }
+});
+
+
 app.listen(8080, ()=>{
     console.log("App rodando!")
 });
 
-app.post("/salvarpergunta",(req,res) => {
-    var titulo = req.body.titulo;
-    var descricao = req.body.descricao;
-    res.send("Formulário recebido com sucesso! Titulo: " + titulo + " Descrição: " + descricao);
-})

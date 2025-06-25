@@ -1,24 +1,23 @@
-
+<%- include('partials/header') %>
 <body>
-    <!-- <img src="/img/doro.webp"> -->
-    <h1>Guia perguntas!</h1>
-    <h3>Lista de perguntas</h3>
-
-    <%= nome %>
-    <%= lang %>
-    <%= empresa %>
-    <%= ano %>
-
-    <% if(msg == true){ %>
-        <h3>Teste True</h3>
-    <% } else { %>
-        <h3>Teste False</h3>
-    <% } %>
-
-    <% produtos.forEach(function(produto){ %>
+    <%- include('partials/navbar') %>
+    <div class="container">
         <hr>
-        <h5><%= produto.nome %></h5>
-        <h5><%= produto.preco %></h5>
-    <% }) %>
+        <h1> Perguntas </h1>
+        <hr>
+        <a href="/perguntar" class="btn btn-primary">Fazer Pergunta</a>
+        <hr>
+        <% perguntas.forEach(function(pergunta) { %>
+            <br>
+            <div class="card">
+                <div class="card-body">
+                    <h3><%= pergunta.titulo %></h3>
+                </div>
+                <div class="card-footer">
+                    <a href="/pergunta/<%= pergunta.id %>"><button class="btn btn-primary">Responder</button></a>
+                </div>
+            </div>
+        <% }) %>
+    </div>
 </body>
-</html>
+<%- include('partials/footer') %>
