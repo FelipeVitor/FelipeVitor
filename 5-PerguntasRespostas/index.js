@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 const connection = require("./database/database");
 const Pergunta = require("./database/Pergunta");
-require('./database/Pergunta');
+const Resposta = require("./database/Resposta");
 
 connection
     .authenticate()
@@ -72,29 +72,43 @@ app.post("/salvarpergunta",(req,res) => {
     });
 });
 
-app.get("/pergunta/:id", async (req, res) => {
-    const { id } = req.params;
-
-    if (isNaN(id)) {
-        return res.redirect("/");
-    }
-
-    try {
-        const pergunta = await Pergunta.findOne({ where: { id } });
-
-        if (pergunta) {
-            res.render("pergunta", { pergunta: pergunta.toJSON() }); 
+app.get("/pergunta/:id", (req, res) => {
+    var id = req.params.id;
+    Pergunta.findOne({
+        where: { id: id }
+    }).then(pergunta => {
+        if (pergunta != undefined) {
+            Resposta.findAll({
+                where: { perguntaId: pergunta.id },
+                order: [['id', 'DESC']]
+            }).then(respostas => {
+                res.render("pergunta", {
+                    pergunta: pergunta,
+                    respostas: respostas
+                });
+            });
         } else {
             res.redirect("/");
         }
-    } catch (error) {
-        console.error("Erro ao buscar pergunta:", error);
-        res.status(500).send("Erro interno do servidor");
-    }
+    }).catch(erro => {
+        res.send("Houve um erro: " + erro);
+    });
+    
 });
 
+app.post("/responder",(req,res) => {
+    var corpo = req.body.corpo;
+    var perguntaId = req.body.pergunta;
+    Resposta.create({
+        corpo: corpo,
+        perguntaId: perguntaId
+    }).then(() => {
+        res.redirect("/pergunta/" + perguntaId);
+    }).catch((erro) => {
+        res.send("Houve um erro: " + erro);
+    });
+});
 
 app.listen(8080, ()=>{
     console.log("App rodando!")
 });
-
